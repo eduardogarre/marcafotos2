@@ -68,12 +68,7 @@
         let icono_imagen = document.getElementById("icono_imagen");
         let lienzo_ejemplo = document.getElementById("lienzo_ejemplo");
         lienzo_ejemplo.crossOrigin = "anonymous";
-
-        let urlBase = "http://localhost:5500";
-        let urlMarca = new URL("/marca.png", urlBase);
-        let marca = new Image()
-        marca.src = urlMarca
-
+ 
         function drawInlineSVG(ctxt, svgElement, callback) {
             var svgURL = new XMLSerializer().serializeToString(svgElement);
             var img = new Image();
@@ -185,6 +180,8 @@
 
             lista_fotos.innerHTML = "";
 
+            archivos_procesados = 0;
+
             for (let i = 0; i < archivos.length; i++) {
                 const url = URL.createObjectURL(archivos[i]);
                 console.log("url: ", url)
@@ -212,19 +209,30 @@
                             let nombre_foto = archivos[i].name
                             zip.file(`${nombre_foto}`, blob);
                             console.log(`${nombre_foto}: `, blob)
+                            archivos_procesados++
+
+                            if (archivos_procesados >= archivos.length) {
+                                zip.generateAsync({ type: "blob" }).then(function (contenido_comprimido) {
+                                    preparaDescargaComprimido(contenido_comprimido)
+                                });
+                            }
+
                         })
                     }
                     catch (e) {
                         console.error("Error al leer el lienzo: ", e)
+                        archivos_procesados++
+
+                        if (archivos_procesados >= archivos.length) {
+                            zip.generateAsync({ type: "blob" }).then(function (contenido_comprimido) {
+                                preparaDescargaComprimido(contenido_comprimido)
+                            });
+                        }
                     }
 
-                    lista_fotos.append(lienzo);
+                    //lista_fotos.append(lienzo);
                 });
             }
-
-            zip.generateAsync({ type: "blob" }).then(function (contenido_comprimido) {
-                preparaDescargaComprimido(contenido_comprimido)
-            });
         }
 
         function fotos_sobrevuelan(evento) {
