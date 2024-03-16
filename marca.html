@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <title>Marca corporativa en tus fotos</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Importa fuentes desde la biblioteca de Google -->
+    <style>
+        /* Importa - Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+    </style>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+
+    <script>
+        // Es mejor incluirlo en la cabecera de todos los html's, para evitar el destello inicial de contenido sin formato (en blanco)
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"
+        integrity="sha512-XMVd28F1oH/O71fzwBnV7HucLxVwtxf26XV8P4wPk26EDxuGZ91N8bsOttmnomcCD3CS5ZMRL50H0GgOHvegtg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+
+<body class="max-w-screen max-h-screen bg-zinc-600 text-zinc-300  flex flex-col justify-center items-center"
+    ondrop="fotos_aterrizan(event);" ondragover="fotos_sobrevuelan(event);" ondragleave="fotos_alejan(event);">
+
+    <div id="aterrizaje_fotos"
+        class="max-w-max max-h-max m-8 p-8 pb-0 flex flex-col gap-4 justify-center items-center bg-zinc-700 hover:bg-zinc-700/70 rounded-xl border border-zinc-900 hover:border-zinc-800">
+        <p id="etiqueta_aterrizaje_fotos" class="text-xl">Arrastra las fotos que quieres marcar</p>
+        <svg class="text-zinc-600 hover:text-zinc-500/50" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+            fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                d="m3 16 5-7 6 6.5m6.5 2.5L16 13l-4.286 6M14 10h.01M4 19h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z" />
+        </svg>
+
+        <div id="lista_fotos"></div>
+
+    </div>
+
+    <script>
+        //let aterrizaje_fotos = document.getElementById("aterrizaje_fotos");
+        let cuerpo = document.body;
+        let etiqueta_aterrizaje_fotos = document.getElementById("etiqueta_aterrizaje_fotos");
+        let lista_fotos = document.getElementById("lista_fotos");
+
+        let urlBase = "http://localhost:5500";
+        let urlMarca = new URL("/marca.png", urlBase);
+        let marca = new Image()
+        marca.src = urlMarca
+    </script>
+
+    <script>
+        function imagenDesdeArchivo(blob) {
+            const url = URL.createObjectURL(blob);
+            let img = new Image();
+            img.src = url;
+
+            return img;
+        }
+
+        function pintaMarcaDeAgua(ctx) {
+            let x = 10
+            let y = 30
+
+            let lienzo = ctx.canvas
+
+            ctx.save();
+            ctx.translate(x, y); // change origin
+            ctx.rotate(Math.PI / 4);
+            ctx.globalAlpha = 0.05;
+            ctx.drawImage(marca, 0, 0, marca.width / 4, marca.height / 4);
+            ctx.restore()
+        }
+    </script>
+
+    <script>
+        function fotos_aterrizan(evento) {
+            //console.log(evento);
+            console.log("Han aterrizado fotos");
+            evento.preventDefault();
+
+            let archivos = []
+
+            if (evento.dataTransfer.items) {
+                // La interfaz DataTransferItemList está disponible para acceder a los archivos
+                [...evento.dataTransfer.items].forEach((elemento, i) => {
+                    // Sólo incluyo los elementos que son archivos
+                    if (elemento.kind === "file") {
+                        const archivo = elemento.getAsFile();
+                        console.log(`… archivo[${i}].nombre = ${archivo.name}`);
+                        archivos.push(archivo);
+                    }
+                });
+            } else {
+                // Uso la interfaz DataTransfer para acceder a los archivos
+                [...evento.dataTransfer.files].forEach((archivo, i) => {
+                    console.log(`… archivo[${i}].nombre = ${archivo.name}`);
+                    archivos.push(archivo);
+                });
+            }
+
+            console.log("Archivos:");
+            console.log(archivos);
+
+            etiqueta_aterrizaje_fotos.innerHTML = "Has arrastrado " + archivos.length + " archivo" + (archivos.length == 1 ? "" : "s");
+
+            lista_fotos.innerHTML = "";
+
+            for (let i = 0; i < archivos.length; i++) {
+                let img = imagenDesdeArchivo(archivos[i]);
+
+                img.addEventListener("load", (e) => {
+                    console.log("ancho foto[" + i + "]: ", img.width)
+                    console.log("alto foto[" + i + "]: ", img.height)
+
+                    let lienzo = document.createElement('canvas');
+                    lienzo.width = img.width
+                    lienzo.height = img.height
+
+                    let ctx = lienzo.getContext("2d");
+                    if (!ctx) { return }
+                    ctx.drawImage(img, 0, 0);
+
+                    pintaMarcaDeAgua(ctx)
+
+                    lista_fotos.append(lienzo);
+                });
+            }
+        }
+
+        function fotos_sobrevuelan(evento) {
+            evento.preventDefault();
+            cuerpo.classList.remove("bg-zinc-100/70");
+            cuerpo.classList.remove("hover:bg-zinc-100");
+            cuerpo.classList.add("bg-zinc-200");
+            console.log("Sobrevuelan fotos");
+        }
+
+        function fotos_alejan(evento) {
+            evento.preventDefault();
+            cuerpo.classList.add("bg-zinc-100/70");
+            cuerpo.classList.add("hover:bg-zinc-100");
+            cuerpo.classList.remove("bg-zinc-200");
+            console.log("Las fotos se alejan");
+        }
+
+        function preparaDescargaComprimido(blob, nombre = 'fotos_marcadas.zip') {
+            // Convierte el blob a un Blob con URL (una url especial que referencia un objeto en la memoria del navegador)
+            const blobUrl = URL.createObjectURL(blob);
+
+            // Crea un enlace-html
+            const enlace = document.createElement("a");
+
+            enlace.href = blobUrl;
+            enlace.innerHTML = "Descarga"
+            enlace.download = nombre;
+
+            document.body.appendChild(enlace);
+
+            // Dispatch click event on the link
+            // This is necessary as link.click() does not work on the latest firefox
+            //enlace.dispatchEvent(
+            //    new MouseEvent('click', {
+            //        bubbles: true,
+            //        cancelable: true,
+            //        view: window
+            //    })
+            //);
+            //// Remove link from body
+            //document.body.removeChild(enlace);
+        }
+
+        let zip = new JSZip();
+        zip.file("hello.txt", "Hello World\n");
+        zip.file("nested/hello.txt", "Hello World\n");
+
+        zip.generateAsync({ type: "blob" }).then(function (contenido_comprimido) {
+            preparaDescargaComprimido(contenido_comprimido)
+        });
+
+    </script>
+
+</body>
+
+</html>
