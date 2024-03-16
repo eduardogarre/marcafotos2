@@ -36,32 +36,57 @@
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 
-<body class="max-w-screen max-h-screen bg-zinc-600 text-zinc-300  flex flex-col justify-center items-center"
+<body class="max-w-screen max-h-screen bg-zinc-600 text-black flex flex-col justify-between items-center"
     ondrop="fotos_aterrizan(event);" ondragover="fotos_sobrevuelan(event);" ondragleave="fotos_alejan(event);">
 
     <div id="aterrizaje_fotos"
-        class="max-w-max max-h-max m-8 p-8 pb-0 flex flex-col gap-4 justify-center items-center bg-zinc-700 hover:bg-zinc-700/70 rounded-xl border border-zinc-900 hover:border-zinc-800">
-        <p id="etiqueta_aterrizaje_fotos" class="text-xl">Arrastra las fotos que quieres marcar</p>
-        <svg class="text-zinc-600 hover:text-zinc-500/50" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-            fill="none" viewBox="0 0 24 24">
+        class="max-w-full max-h-full m-8 p-16 pb-4 gap-8 flex flex-col justify-between items-center">
+        <p id="etiqueta_aterrizaje_fotos" class="text-xl">Arrastra fotos que marcar</p>
+        <svg id="icono_imagen" class="hidden text-zinc-600 hover:text-zinc-500/50" aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
                 d="m3 16 5-7 6 6.5m6.5 2.5L16 13l-4.286 6M14 10h.01M4 19h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z" />
         </svg>
+
+        <canvas id="lienzo_foto_ejemplo"
+            class="max-w-fit max-h-fit min-w-fit min-h-fit bg-zinc-800 p-0 m-0 rounded-xl border border-zinc-900"></canvas>
 
         <div id="lista_fotos"></div>
 
     </div>
 
     <script>
+        let alpha_marga_agua = 0.025
+
         //let aterrizaje_fotos = document.getElementById("aterrizaje_fotos");
         let cuerpo = document.body;
         let etiqueta_aterrizaje_fotos = document.getElementById("etiqueta_aterrizaje_fotos");
         let lista_fotos = document.getElementById("lista_fotos");
+        let icono_imagen = document.getElementById("icono_imagen");
+        let lienzo_ejemplo = document.getElementById("lienzo_foto_ejemplo");
 
         let urlBase = "http://localhost:5500";
         let urlMarca = new URL("/marca.png", urlBase);
         let marca = new Image()
         marca.src = urlMarca
+
+        function drawInlineSVG(ctxt, svgElement, callback) {
+            var svgURL = new XMLSerializer().serializeToString(svgElement);
+            var img = new Image();
+            img.onload = function () {
+                let lienzo = ctxt.canvas
+                lienzo.width = img.width * 3
+                lienzo.height = img.height * 3
+                // set transparency value
+                ctxt.globalAlpha = 0.2;
+                ctxt.drawImage(img, 0, 0);
+
+                pintaMarcaDeAgua(ctxt);
+
+                callback();
+            }
+            img.src = 'data:image/svg+xml; charset=utf8, ' + encodeURIComponent(svgURL);
+        }
     </script>
 
     <script>
@@ -74,17 +99,22 @@
         }
 
         function pintaMarcaDeAgua(ctx) {
-            let x = 10
-            let y = 30
+            let margen = 250
+            let margen_horizontal = margen
+            let margen_vertical = margen
 
             let lienzo = ctx.canvas
 
-            ctx.save();
-            ctx.translate(x, y); // change origin
-            ctx.rotate(Math.PI / 4);
-            ctx.globalAlpha = 0.05;
-            ctx.drawImage(marca, 0, 0, marca.width / 4, marca.height / 4);
-            ctx.restore()
+            for (let x = -margen; x < (lienzo.width + margen * 4); x += margen ) {
+                for (let y = -margen; y < (lienzo.height + margen * 4); y += margen) {
+                    ctx.save();
+                    ctx.translate(x, y); // change origin
+                    ctx.rotate(Math.PI / 4);
+                    ctx.globalAlpha = alpha_marga_agua;
+                    ctx.drawImage(marca, 0, 0, marca.width / 4, marca.height / 4);
+                    ctx.restore()
+                }
+            }
         }
     </script>
 
@@ -183,6 +213,15 @@
             //);
             //// Remove link from body
             //document.body.removeChild(enlace);
+        }
+
+        let ctxt = lienzo_ejemplo.getContext("2d")
+
+        // usage:
+        icono_imagen.onload = function () {
+            drawInlineSVG(ctxt, icono_imagen, function () {
+                console.log(lienzo_ejemplo.toDataURL())
+            });
         }
 
         let zip = new JSZip();
