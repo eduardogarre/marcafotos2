@@ -42,13 +42,14 @@
     <div id="aterrizaje_fotos"
         class="max-w-full max-h-full m-8 p-16 pb-4 gap-8 flex flex-col justify-between items-center">
         <p id="etiqueta_aterrizaje_fotos" class="text-xl">Arrastra fotos para marcar</p>
-        <svg crossorigin="anonymous" id="icono_imagen" class="hidden text-zinc-600 hover:text-zinc-500/50"
-            aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+
+        <svg id="icono_imagen" class="hidden text-zinc-600 hover:text-zinc-500/50" aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
                 d="m3 16 5-7 6 6.5m6.5 2.5L16 13l-4.286 6M14 10h.01M4 19h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z" />
         </svg>
 
-        <canvas id="lienzo_ejemplo" crossorigin="anonymous"
+        <canvas id="lienzo_ejemplo"
             class="max-w-fit max-h-fit min-w-fit min-h-fit bg-zinc-800 p-0 m-0 rounded-xl border border-zinc-900"></canvas>
 
         <div id="lista_fotos"></div>
@@ -68,23 +69,29 @@
         let icono_imagen = document.getElementById("icono_imagen");
         let lienzo_ejemplo = document.getElementById("lienzo_ejemplo");
         lienzo_ejemplo.crossOrigin = "anonymous";
- 
-        function drawInlineSVG(ctxt, svgElement, callback) {
+
+        function drawInlineSVG(ctxt, svgElement) {
             var svgURL = new XMLSerializer().serializeToString(svgElement);
             var img = new Image();
             img.crossOrigin = "anonymous";
+
             img.onload = function () {
+                img.width = 150
+                img.height = 150
                 let lienzo = ctxt.canvas
                 lienzo.width = img.width * 3
                 lienzo.height = img.height * 3
-                // set transparency value
+
+                ctxt.save()
+
                 ctxt.globalAlpha = 0.2;
-                ctxt.drawImage(img, 0, 0);
+                ctxt.drawImage(img, 0, 0, 450, 450);
 
                 pintaMarcaDeAgua(ctxt);
 
-                callback();
+                ctxt.restore()
             }
+
             img.src = 'data:image/svg+xml; charset=utf8, ' + encodeURIComponent(svgURL);
         }
     </script>
@@ -100,7 +107,8 @@
             for (let x = -margen; x < (lienzo.width + margen * 4); x += margen) {
                 for (let y = -margen; y < (lienzo.height + margen * 4); y += margen) {
                     ctx.save();
-                    ctx.translate(x, y); // change origin
+
+                    ctx.translate(x, y);
                     ctx.rotate(Math.PI / 4);
                     ctx.globalAlpha = alpha_marca_agua;
                     ctx.fillStyle = "#ffffff";
@@ -112,7 +120,7 @@
                     ctx.fillText("ECOGRAFIA", 54, 10);
                     ctx.font = "33px sans-serif";
                     ctx.fillText("SEMERGEN", -3, 40);
-                    //ctx.drawImage(marca, 0, 0, marca.width / 4, marca.height / 4);
+
                     ctx.restore()
                 }
             }
@@ -147,7 +155,6 @@
         }
 
         function fotos_aterrizan(evento) {
-            //console.log(evento);
             console.log("Han aterrizado fotos");
             evento.preventDefault();
 
@@ -180,7 +187,7 @@
 
             lista_fotos.innerHTML = "";
 
-            archivos_procesados = 0;
+            let archivos_procesados = 0;
 
             for (let i = 0; i < archivos.length; i++) {
                 const url = URL.createObjectURL(archivos[i]);
@@ -254,10 +261,8 @@
         let ctxt = lienzo_ejemplo.getContext("2d")
 
         // usage:
-        icono_imagen.onload = function () {
-            drawInlineSVG(ctxt, icono_imagen, function () {
-                //console.log(lienzo_ejemplo.toDataURL())
-            });
+        document.body.onload = function () {
+            drawInlineSVG(ctxt, icono_imagen);
         }
 
         //zip.file(`${carpeta_zip}/hola.txt`, "hola");
