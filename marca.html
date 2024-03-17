@@ -105,8 +105,8 @@
 
             let lienzo = ctx.canvas
 
-            for (let x = -margen; x < (lienzo.width + margen * 4); x += margen) {
-                for (let y = -margen; y < (lienzo.height + margen * 4); y += margen) {
+            for (let x = -margen_horizontal; x < (lienzo.width + margen_horizontal * 4); x += margen_horizontal) {
+                for (let y = -margen_vertical; y < (lienzo.height + margen_vertical * 4); y += margen_vertical) {
                     ctx.save();
 
                     ctx.translate(x, y);
@@ -129,30 +129,12 @@
     </script>
 
     <script>
-        function preparaDescargaComprimido(blob, nombre = 'fotos_marcadas.zip') {
+        function preparaDescargaComprimido(blob) {
             // Convierte el blob a un Blob con URL (una url especial que referencia un objeto en la memoria del navegador)
             const blobUrl = URL.createObjectURL(blob);
 
             // Crea un enlace-html
-            const enlace = document.createElement("a");
-
-            enlace.href = blobUrl;
-            enlace.innerHTML = "Descarga"
-            enlace.download = nombre;
-
-            document.body.appendChild(enlace);
-
-            // Dispatch click event on the link
-            // This is necessary as link.click() does not work on the latest firefox
-            enlace.dispatchEvent(
-                new MouseEvent('click', {
-                    bubbles: true,
-                    cancelable: true,
-                    view: window
-                })
-            );
-            //// Remove link from body
-            document.body.removeChild(enlace);
+            actualiza_etiqueta_descarga_comprimido(blobUrl)
         }
 
         function intenta_comprimir() {
@@ -161,6 +143,31 @@
                     preparaDescargaComprimido(contenido_comprimido)
                 });
             }
+        }
+
+        function actualiza_etiqueta_descarga_comprimido(url) {
+            etiqueta_aterrizaje_fotos.innerHTML = ""
+
+            // Crea un enlace-html
+            const enlace = document.createElement("a");
+
+            enlace.className = "text-blue-700 font-semibold"
+
+            enlace.href = url;
+            enlace.innerHTML = `↓ Descarga ${fotos_procesadas} foto${fotos_procesadas == 1 ? "" : "s"} ↓`;
+            enlace.download = ` ${carpeta_zip}.zip`;;
+
+            etiqueta_aterrizaje_fotos.appendChild(enlace);
+
+            // Mando un evento 'click' al enlace
+            // Hay que hacerlo así porque enlace.click() no funciona en firefox
+            enlace.dispatchEvent(
+                new MouseEvent('click', {
+                    bubbles: true,
+                    cancelable: true,
+                    view: window
+                })
+            );
         }
 
         function actualiza_etiqueta_aterrizaje() {
@@ -196,7 +203,7 @@
             console.log(archivos);
 
             actualiza_etiqueta_aterrizaje()
-            
+
             lista_fotos.innerHTML = "";
 
             fotos_comprimidas = 0;
@@ -211,7 +218,7 @@
                     fotos_procesadas++;
 
                     actualiza_etiqueta_aterrizaje()
-            
+
                     let lienzo = document.createElement('canvas');
                     lienzo.crossOrigin = "anonymous";
                     lienzo.width = img.width
@@ -263,12 +270,9 @@
 
         let ctxt = lienzo_ejemplo.getContext("2d")
 
-        // usage:
         document.body.onload = function () {
             dibujaSVG(ctxt, icono_imagen);
-        }
-
-        //zip.file(`${carpeta_zip}/hola.txt`, "hola");
+        } 
     </script>
 
 </body>
