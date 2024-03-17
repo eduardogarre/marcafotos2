@@ -36,12 +36,12 @@
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 
-<body class="max-w-screen max-h-screen bg-zinc-600 text-black flex flex-col justify-between items-center"
+<body class="max-w-screen max-h-screen bg-zinc-700 text-zinc-200 flex flex-col justify-between items-center"
     ondrop="fotos_aterrizan(event);" ondragover="fotos_sobrevuelan(event);" ondragleave="fotos_alejan(event);">
 
     <div id="aterrizaje_fotos"
         class="max-w-full max-h-full m-8 p-16 pb-4 gap-8 flex flex-col justify-between items-center">
-        <p id="etiqueta_aterrizaje_fotos" class="text-xl">Arrastra fotos para marcar</p>
+        <p id="etiqueta_aterrizaje_fotos" style="text-shadow: #000 1px 0 10px;" class="text-xl">Arrastra fotos para marcar</p>
 
         <svg id="icono_imagen" class="hidden text-zinc-600 hover:text-zinc-500/50" aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -50,7 +50,7 @@
         </svg>
 
         <canvas id="lienzo_ejemplo"
-            class="max-w-fit max-h-fit min-w-fit min-h-fit bg-zinc-800 p-0 m-0 rounded-xl border border-zinc-900"></canvas>
+            class="max-w-fit max-h-fit min-w-fit min-h-fit bg-zinc-800 p-0 m-0 rounded-xl border border-zinc-600 drop-shadow-[1px_1px_4px_rgba(0,0,0,0.5)]"></canvas>
 
         <div id="lista_fotos"></div>
 
@@ -68,6 +68,7 @@
 
         let cuerpo = document.body;
         let etiqueta_aterrizaje_fotos = document.getElementById("etiqueta_aterrizaje_fotos");
+        etiqueta_aterrizaje_fotos.textShadow = "#F000 1px 0 10px"
         let lista_fotos = document.getElementById("lista_fotos");
         let icono_imagen = document.getElementById("icono_imagen");
         let lienzo_ejemplo = document.getElementById("lienzo_ejemplo");
@@ -126,9 +127,7 @@
                 }
             }
         }
-    </script>
 
-    <script>
         function preparaDescargaComprimido(blob) {
             // Convierte el blob a un Blob con URL (una url especial que referencia un objeto en la memoria del navegador)
             const blobUrl = URL.createObjectURL(blob);
@@ -151,7 +150,7 @@
             // Crea un enlace-html
             const enlace = document.createElement("a");
 
-            enlace.className = "text-blue-700 font-semibold"
+            enlace.className = "text-blue-400 font-semibold"
 
             enlace.href = url;
             enlace.innerHTML = `↓ Descarga ${fotos_procesadas} foto${fotos_procesadas == 1 ? "" : "s"} ↓`;
@@ -171,6 +170,7 @@
         }
 
         function actualiza_etiqueta_aterrizaje() {
+            etiqueta_aterrizaje_fotos.style.textShadow = "#000 1px 0 10px"
             etiqueta_aterrizaje_fotos.innerHTML = `Has arrastrado ${fotos_procesadas} foto${fotos_procesadas == 1 ? "" : "s"}`;
         }
 
@@ -254,17 +254,19 @@
 
         function fotos_sobrevuelan(evento) {
             evento.preventDefault();
-            cuerpo.classList.remove("bg-zinc-100/70");
-            cuerpo.classList.remove("hover:bg-zinc-100");
-            cuerpo.classList.add("bg-zinc-200");
+
+            document.body.classList.remove("bg-zinc-700")
+            document.body.classList.add("bg-gray-700")
+
             console.log("Sobrevuelan fotos");
         }
 
         function fotos_alejan(evento) {
             evento.preventDefault();
-            cuerpo.classList.add("bg-zinc-100/70");
-            cuerpo.classList.add("hover:bg-zinc-100");
-            cuerpo.classList.remove("bg-zinc-200");
+
+            document.body.classList.remove("bg-gray-700")
+            document.body.classList.add("bg-zinc-700")
+
             console.log("Las fotos se alejan");
         }
 
