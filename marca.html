@@ -41,7 +41,8 @@
 
     <div id="aterrizaje_fotos"
         class="max-w-full max-h-full m-8 p-16 pb-4 gap-8 flex flex-col justify-between items-center">
-        <p id="etiqueta_aterrizaje_fotos" style="text-shadow: #000 1px 0 10px;" class="text-xl">Arrastra fotos para marcarlas</p>
+        <p id="etiqueta_aterrizaje_fotos" style="text-shadow: #000 1px 0 10px;" class="text-xl">Arrastra fotos para
+            marcarlas</p>
 
         <svg id="icono_imagen" class="hidden text-zinc-600 hover:text-zinc-500/50" aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -55,6 +56,34 @@
         <div id="lista_fotos"></div>
 
     </div>
+
+    <footer class="fixed top-0 left-0 right-0 bg-white rounded-lg shadow m-2 dark:bg-zinc-800">
+        <div class="p-3 pb-2 flex items-center justify-center text-center text-sm text-zinc-500 dark:text-zinc-400">
+            <span>
+                <p xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/"
+                    class="flex flex-row">
+                    <a property="dct:title" rel="cc:attributionURL" href="https://github.com/eduardogarre/marcafotos2">
+                        MarcaFotos2,&nbsp;
+                    </a>
+                    <a rel="cc:attributionURL dct:creator" property="cc:attributionName"
+                        href="https://github.com/eduardogarre">
+                        Eduardo Garre 2024,&nbsp;
+                    </a>
+                    <a href="http://creativecommons.org/licenses/by-nd/4.0/?ref=chooser-v1" target="_blank"
+                        rel="license noopener noreferrer" class="flex flex-row">
+                        CC BY-ND 4.0&nbsp;&nbsp;
+                        <img class="w-6 h-6 relative top-[-2px]"
+                            src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1">
+                        <img class="w-6 h-6 relative top-[-2px]"
+                            src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1">
+                        <img class="w-6 h-6 relative top-[-2px]"
+                            src="https://mirrors.creativecommons.org/presskit/icons/nd.svg?ref=chooser-v1">
+                    </a>
+                </p>
+            </span>
+        </div>
+    </footer>
+
 
     <script>
         let alpha_marca_agua = 0.025
