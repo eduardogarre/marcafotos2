@@ -41,7 +41,7 @@
 
     <div id="aterrizaje_fotos"
         class="max-w-full max-h-full m-8 p-16 pb-4 gap-8 flex flex-col justify-between items-center">
-        <p id="etiqueta_aterrizaje_fotos" style="text-shadow: #000 1px 0 10px;" class="text-xl">Arrastra fotos para marcar</p>
+        <p id="etiqueta_aterrizaje_fotos" style="text-shadow: #000 1px 0 10px;" class="text-xl">Arrastra fotos para marcarlas</p>
 
         <svg id="icono_imagen" class="hidden text-zinc-600 hover:text-zinc-500/50" aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -154,7 +154,7 @@
 
             enlace.href = url;
             enlace.innerHTML = `↓ Descarga ${fotos_procesadas} foto${fotos_procesadas == 1 ? "" : "s"} ↓`;
-            enlace.download = ` ${carpeta_zip}.zip`;;
+            enlace.download = `${carpeta_zip}.zip`;;
 
             etiqueta_aterrizaje_fotos.appendChild(enlace);
 
