@@ -59,7 +59,7 @@
         <canvas id="lienzo_ejemplo"
             class="max-w-fit max-h-fit min-w-fit min-h-fit bg-zinc-800 p-0 m-0 rounded-xl border border-zinc-600 drop-shadow-[1px_1px_4px_rgba(0,0,0,0.5)]"></canvas>
 
-        <div id="lista_fotos"></div>
+        <div id="lista_fotos" class="hidden"></div>
 
     </div>
 
@@ -93,7 +93,9 @@
 
     <script>
         let alpha_marca_agua = 0.025
+        let extensión_fotos = 'png'
         let carpeta_zip = "fotos_marcadas"
+        let adenda_fotos_marcadas = '_marcada'
 
         let fotos_procesadas = 0;
         let fotos_comprimidas = 0;
@@ -210,7 +212,7 @@
         }
 
         function fotos_aterrizan(evento) {
-            console.log("Han aterrizado fotos");
+            console.log("Han aterrizado archivos");
             evento.preventDefault();
 
             let archivos = []
@@ -268,6 +270,23 @@
                     try {
                         lienzo.toBlob(function (blob) {
                             let nombre_foto = archivos[i].name
+
+                            let partes = nombre_foto.split('.')
+
+                            if (partes.length > 1) {
+                                partes[partes.length - 1] = extensión_fotos
+                                partes[partes.length - 2] += adenda_fotos_marcadas
+                            }
+                            else if (partes.length == 1) {
+                                partes.push(extensión_fotos)
+                                partes[partes.length - 2] += adenda_fotos_marcadas
+                            }
+                            else if (partes.length < 1) {
+                                throw new Error("La foto no tiene nombre")
+                            }
+
+                            nombre_foto = partes.join(".")
+                            console.log(`ZIP :: Incluyendo archivo [${nombre_foto}]`);
                             zip.file(`${nombre_foto}`, blob);
                             fotos_comprimidas++
 
