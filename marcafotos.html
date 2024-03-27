@@ -92,6 +92,8 @@
 
 
     <script>
+        let margen_marcas_agua = 200
+        let tamaño_marca_agua = 7
         let alpha_marca_agua = 0.075
         let extensión_fotos = 'png'
         let carpeta_zip = "fotos_marcadas"
@@ -137,9 +139,8 @@
 
     <script>
         function pintaMarcaDeAgua(ctx) {
-            let margen = 150
-            let margen_horizontal = margen
-            let margen_vertical = margen
+            let margen_horizontal = margen_marcas_agua
+            let margen_vertical = margen_marcas_agua
 
             let lienzo = ctx.canvas
 
@@ -151,14 +152,14 @@
                     ctx.rotate(Math.PI / 4);
                     ctx.globalAlpha = alpha_marca_agua;
                     ctx.fillStyle = "#ffffff";
-                    ctx.font = "10px sans-serif";
+                    ctx.font = `${tamaño_marca_agua * 1}px sans-serif`;
                     ctx.fillText("GRUPO de", 0, 0);
-                    ctx.font = "11px sans-serif";
-                    ctx.fillText("TRABAJO", 0, 10);
-                    ctx.font = "22px sans-serif";
-                    ctx.fillText("ECOGRAFIA", 54, 10);
-                    ctx.font = "33px sans-serif";
-                    ctx.fillText("SEMERGEN", -3, 40);
+                    ctx.font = `${tamaño_marca_agua * 1.1}px sans-serif`;
+                    ctx.fillText("TRABAJO", 0, tamaño_marca_agua * 1);
+                    ctx.font = `${tamaño_marca_agua * 2.2}px sans-serif`;
+                    ctx.fillText("ECOGRAFIA", tamaño_marca_agua * 5.4, tamaño_marca_agua * 1);
+                    ctx.font = `${tamaño_marca_agua * 3.3}px sans-serif`;
+                    ctx.fillText("SEMERGEN", tamaño_marca_agua * (-0.3), tamaño_marca_agua * 4);
 
                     ctx.restore()
                 }
