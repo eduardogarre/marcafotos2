@@ -92,9 +92,9 @@
 
 
     <script>
-        let margen_marcas_agua = 200
-        let tamaño_marca_agua = 7
-        let alpha_marca_agua = 0.075
+        let margen_marcas_agua = 350
+        let tamaño_marca_agua = 10
+        let alpha_marca_agua = 0.25
         let extensión_fotos = 'png'
         let carpeta_zip = "fotos_marcadas"
         let adenda_fotos_marcadas = '_marcada'
@@ -151,7 +151,7 @@
                     ctx.translate(x, y);
                     ctx.rotate(-Math.PI / 4);
                     ctx.globalAlpha = alpha_marca_agua;
-                    ctx.fillStyle = "#ffffff";
+                    ctx.fillStyle = "#888";
                     ctx.font = `${tamaño_marca_agua * 1}px sans-serif`;
                     ctx.fillText("GRUPO de", 0, 0);
                     ctx.font = `${tamaño_marca_agua * 1.1}px sans-serif`;
